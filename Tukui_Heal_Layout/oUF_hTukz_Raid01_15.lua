@@ -118,11 +118,11 @@ local function Shared(self, unit)
 		self.RaidIcon = RaidIcon
 	end
 	
-	--local ReadyCheck = self.Power:CreateTexture(nil, "OVERLAY")
-	--ReadyCheck:SetHeight(TukuiDB.Scale(12*TukuiDB.raidscale))
-	--ReadyCheck:SetWidth(TukuiDB.Scale(12*TukuiDB.raidscale))
-	--ReadyCheck:SetPoint('CENTER')
-	--self.ReadyCheck = ReadyCheck
+	local ReadyCheck = self.Power:CreateTexture(nil, "OVERLAY")
+	ReadyCheck:SetHeight(TukuiDB.Scale(12*TukuiDB.raidscale))
+	ReadyCheck:SetWidth(TukuiDB.Scale(12*TukuiDB.raidscale))
+	ReadyCheck:SetPoint('CENTER')
+	self.ReadyCheck = ReadyCheck
 	
     local debuffs = CreateFrame('Frame', nil, self)
     debuffs:SetPoint('LEFT', self, 'RIGHT', 4, 0)

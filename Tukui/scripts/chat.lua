@@ -59,11 +59,12 @@ local function SetChatStyle(frame)
 	tab.SetAlpha = UIFrameFadeRemoveFrame
 	
 	-- hide text when setting chat
-	_G[chat.."TabText"]:Hide()
+	_G[chat.."TabText"]:SetFont(TukuiCF["media"].pixelfont, 8, "MONOCHROMEOUTLINE")
+	_G[chat.."TabText"]:Show()
 	
 	-- now show text if mouse is found over tab.
 	tab:HookScript("OnEnter", function() _G[chat.."TabText"]:Show() end)
-	tab:HookScript("OnLeave", function() _G[chat.."TabText"]:Hide() end)
+	tab:HookScript("OnLeave", function() _G[chat.."TabText"]:Show() end)
 	
 	-- yeah baby
 	_G[chat]:SetClampRectInsets(0,0,0,0)
@@ -351,30 +352,56 @@ function TukuiDB.ChatCopyButtons()
 	for i = 1, NUM_CHAT_WINDOWS do
 		local cf = _G[format("ChatFrame%d",  i)]
 		local button = CreateFrame("Button", format("ButtonCF%d", i), cf)
-		button:SetPoint("TOPRIGHT", 0, 0)
-		button:SetHeight(TukuiDB.Scale(20))
+		button:SetPoint("BOTTOMRIGHT", cf, "TOPRIGHT", -1, 3)
+		button:SetHeight(TukuiDB.Scale(23))
 		button:SetWidth(TukuiDB.Scale(20))
-		button:SetAlpha(0)
 		TukuiDB.SetTemplate(button)
+		TukuiDB.CreateShadow(button)
+		TukuiDB.CreateGloss(button)
+		button:SetBackdropColor(TukuiCF["media"].backdropcolor[1], TukuiCF["media"].backdropcolor[2], TukuiCF["media"].backdropcolor[3], 0.7)
+		button:SetBackdropBorderColor(TukuiCF["media"].bordercolor[1], TukuiCF["media"].bordercolor[2], TukuiCF["media"].bordercolor[3], 0.7)
 		
 		local buttontext = button:CreateFontString(nil,"OVERLAY",nil)
-		buttontext:SetFont(TukuiCF.media.font,12,"OUTLINE")
+		buttontext:SetFont(TukuiCF.media.pixelfont,12,"MONOCHROMEOUTLINE")
 		buttontext:SetText("C")
-		buttontext:SetPoint("CENTER", TukuiDB.Scale(1), 0)
+		buttontext:SetPoint("CENTER", TukuiDB.Scale(1), TukuiDB.Scale(-1))
 		buttontext:SetJustifyH("CENTER")
 		buttontext:SetJustifyV("CENTER")
 				
-		button:SetScript("OnMouseUp", function(self)
+		button:SetScript("OnMouseDown", function(self)
 			Copy(cf)
 		end)
-		button:SetScript("OnEnter", function() 
-			button:SetAlpha(1) 
-		end)
-		button:SetScript("OnLeave", function() button:SetAlpha(0) end)
 	end
 end
 TukuiDB.ChatCopyButtons()
 
+chatVisible = true
+function TukuiDB.HideChatbutton()
+	for i = 1, NUM_CHAT_WINDOWS do
+		local cf = _G[format("ChatFrame%d",  i)]
+		local button = CreateFrame("Button", "ButtonHF1", cf)
+		button:SetPoint("BOTTOMRIGHT", cf, "TOPRIGHT", -23, 3)
+		button:SetHeight(TukuiDB.Scale(23))
+		button:SetWidth(TukuiDB.Scale(20))
+		TukuiDB.SetTemplate(button)
+		TukuiDB.CreateShadow(button)
+		TukuiDB.CreateGloss(button)
+		button:SetBackdropColor(TukuiCF["media"].backdropcolor[1], TukuiCF["media"].backdropcolor[2], TukuiCF["media"].backdropcolor[3], 0.7)
+		button:SetBackdropBorderColor(TukuiCF["media"].bordercolor[1], TukuiCF["media"].bordercolor[2], TukuiCF["media"].bordercolor[3], 0.7)
+		
+		local buttontext = button:CreateFontString(nil,"OVERLAY",nil)
+		buttontext:SetFont(TukuiCF.media.pixelfont,12,"MONOCHROMEOUTLINE")
+		buttontext:SetText("H")
+		buttontext:SetPoint("CENTER", TukuiDB.Scale(1), TukuiDB.Scale(-1))
+		buttontext:SetJustifyH("CENTER")
+		buttontext:SetJustifyV("CENTER")
+				
+		button:SetScript("OnMouseDown", function(self)
+			print("This function is temporarily disabled")
+		end)
+	end
+end
+TukuiDB.HideChatbutton()
 
 ------------------------------------------------------------------------
 --	Enhance/rewrite a Blizzard feature, chatframe mousewheel.

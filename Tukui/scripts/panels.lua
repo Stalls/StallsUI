@@ -165,6 +165,24 @@ if TukuiCF["datatext"].battleground == true then
 	bgframe:EnableMouse(true)
 end
 
+-- Chat background
+local chatleft = CreateFrame("Frame", "ChatLeftBackground", UIParent)
+TukuiDB.CreatePanel(chatleft, TukuiCF["panels"].tinfowidth, 120, "BOTTOMLEFT", TukuiInfoLeft, "TOPLEFT", TukuiDB.Scale(0), TukuiDB.Scale(0))
+chatleft:SetFrameLevel(1)
+chatleft:SetFrameStrata("BACKGROUND")
+chatleft:SetBackdropColor(TukuiCF["media"].backdropcolor[1], TukuiCF["media"].backdropcolor[2], TukuiCF["media"].backdropcolor[3], 0.7)
+chatleft:SetBackdropBorderColor(TukuiCF["media"].bordercolor[1], TukuiCF["media"].bordercolor[2], TukuiCF["media"].bordercolor[3], 0.7)
+
+-- Tab background
+local chattableft = CreateFrame("Frame", "ChatLeftTabsBackground", UIParent)
+TukuiDB.CreatePanel(chattableft, TukuiCF["panels"].tinfowidth-44, 23, "BOTTOMLEFT", ChatLeftBackground, "TOPLEFT", TukuiDB.Scale(0), TukuiDB.Scale(0))
+chattableft:SetFrameLevel(2)
+chattableft:SetFrameStrata("BACKGROUND")
+chattableft:SetBackdropColor(TukuiCF["media"].backdropcolor[1], TukuiCF["media"].backdropcolor[2], TukuiCF["media"].backdropcolor[3], 0.7)
+chattableft:SetBackdropBorderColor(TukuiCF["media"].bordercolor[1], TukuiCF["media"].bordercolor[2], TukuiCF["media"].bordercolor[3], 0.7)
+TukuiDB.CreateShadow(chattableft)
+TukuiDB.CreateGloss(chattableft)
+
 -- Top viewport
 local topbar = CreateFrame("Frame", "topbar", UIParent)
 TukuiDB.CreatePanel(topbar, UIParent:GetWidth() + (TukuiDB.mult * 2), 23, "TOPLEFT", UIParent, "TOPLEFT", -TukuiDB.mult, TukuiDB.Scale(3))
