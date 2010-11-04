@@ -28,7 +28,7 @@ TukuiCF["unitframes"] = {
 	["charportrait"] = true,              -- do i really need to explain this?
 	-- NOT DONE YET ["maintank"] = false,  -- enable maintank
 	-- NOT DONE YET ["mainassist"] = false,-- enable mainassist
-	["unicolor"] = false,                  -- enable unicolor theme
+	["unicolor"] = true,                  -- enable unicolor theme
 	["combatfeedback"] = true,             -- enable combattext on player and target.
 	["playeraggro"] = true,                -- color player border to red if you have aggro on current target.
 	["positionbychar"] = true,             -- save X, Y position with /uf (movable frame) per character instead of per account.
@@ -37,12 +37,12 @@ TukuiCF["unitframes"] = {
 	-- raid layout
 	["showrange"] = true,                  -- show range opacity on raidframes
 	["raidalphaoor"] = 0.3,                -- alpha of unitframes when unit is out of range
-	["gridonly"] = false,                  -- enable grid only mode for all healer mode raid layout.
+	["gridonly"] = true,                  -- enable grid only mode for all healer mode raid layout.
 	["showsymbols"] = true,	               -- show symbol.
 	["aggro"] = true,                      -- show aggro on all raids layouts
 	["raidunitdebuffwatch"] = true,        -- track important spell to watch in pve for grid mode.
 	["gridhealthvertical"] = true,         -- enable vertical grow on health bar for grid mode.
-	["showplayerinparty"] = false,         -- show my player frame in party
+	["showplayerinparty"] = true,         -- show my player frame in party
 	["gridscale"] = 1,                     -- set the healing grid scaling
 	
 	-- boss frames
