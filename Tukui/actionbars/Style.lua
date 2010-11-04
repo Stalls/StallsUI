@@ -44,6 +44,10 @@ function style(self)
  
 		panel:SetFrameStrata(self:GetFrameStrata())
 		panel:SetFrameLevel(self:GetFrameLevel() - 1)
+		panel:SetBackdropColor(TukuiCF["media"].backdropcolor[1], TukuiCF["media"].backdropcolor[2], TukuiCF["media"].backdropcolor[3], 0.7)
+		panel:SetBackdropBorderColor(TukuiCF["media"].bordercolor[1], TukuiCF["media"].bordercolor[2], TukuiCF["media"].bordercolor[3], 0.7)
+		TukuiDB.CreateShadow(panel)
+		
 		
 		Icon:SetAlpha(1)
 		Icon:SetTexCoord(.08, .92, .08, .92)
@@ -258,51 +262,37 @@ end
 do
 	for i = 1, 12 do
 		TukuiDB.StyleButton(_G["ActionButton"..i], true)
-		TukuiDB.CreateShadow(_G["ActionButton"..i])
 		TukuiDB.CreateGloss(_G["ActionButton"..i])
-		_G["ActionButton"..i]:SetAlpha(0.8)
 	end
 	
 	for i = 1, 12 do
 		TukuiDB.StyleButton(_G["MultiBarBottomLeftButton"..i], true)
-		TukuiDB.CreateShadow(_G["MultiBarBottomLeftButton"..i])
 		TukuiDB.CreateGloss(_G["MultiBarBottomLeftButton"..i])
-		_G["MultiBarBottomLeftButton"..i]:SetAlpha(0.8)
 	end
 	
 	for i = 1, 12 do
 		TukuiDB.StyleButton(_G["MultiBarBottomRightButton"..i], true)
-		TukuiDB.CreateShadow(_G["MultiBarBottomRightButton"..i])
 		TukuiDB.CreateGloss(_G["MultiBarBottomRightButton"..i])
-		_G["MultiBarBottomRightButton"..i]:SetAlpha(0.8)
 	end
 	
 	for i = 1, 12 do
 		TukuiDB.StyleButton(_G["MultiBarLeftButton"..i], true)
-		TukuiDB.CreateShadow(_G["MultiBarLeftButton"..i])
 		TukuiDB.CreateGloss(_G["MultiBarLeftButton"..i])
-		_G["MultiBarLeftButton"..i]:SetAlpha(0.8)
 	end
 	
 	for i = 1, 12 do
 		TukuiDB.StyleButton(_G["MultiBarRightButton"..i], true)
-		TukuiDB.CreateShadow(_G["MultiBarRightButton"..i])
 		TukuiDB.CreateGloss(_G["MultiBarRightButton"..i])
-		_G["MultiBarRightButton"..i]:SetAlpha(0.8)
 	end
 	 
 	for i=1, 10 do
 		TukuiDB.StyleButton(_G["ShapeshiftButton"..i], true)
-		TukuiDB.CreateShadow(_G["ShapeshiftButton"..i])
 		TukuiDB.CreateGloss(_G["ShapeshiftButton"..i])
-		_G["ShapeshiftButton"..i]:SetAlpha(0.8)
 	end
 	 
 	for i=1, 10 do
 		TukuiDB.StyleButton(_G["PetActionButton"..i], true)
-		TukuiDB.CreateShadow(_G["PetActionButton"..i])
 		TukuiDB.CreateGloss(_G["PetActionButton"..i])
-		_G["PetActionButton"..i]:SetAlpha(0.8)
 	end
 end
 
