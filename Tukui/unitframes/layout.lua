@@ -78,7 +78,7 @@ local function Shared(self, unit)
 		-- health bar background
 		local healthBG = health:CreateTexture(nil, 'BORDER')
 		healthBG:SetAllPoints()
-		healthBG:SetTexture(.1, .1, .1)
+		healthBG:SetTexture(.03, .03, .03)
 	
 		health.value = TukuiDB.SetFontString(panel, TukuiCF.media.pixelfont, 8, "MONOCHROMEOUTLINE")
 		health.value:SetPoint("RIGHT", panel, "RIGHT", TukuiDB.Scale(-4), 0)
@@ -95,8 +95,8 @@ local function Shared(self, unit)
 		health.colorTapping = false
 		health.colorDisconnected = false
 		health.colorClass = false
-		health:SetStatusBarColor(.1, .1, .1, 1)
-		healthBG:SetVertexColor(.1, .1, .1, 1)		
+		health:SetStatusBarColor(.21, .21, .21, 1)
+		healthBG:SetVertexColor(.21, .21, .21, 1)		
 
 		-- power
 		local power = CreateFrame('StatusBar', nil, self)
