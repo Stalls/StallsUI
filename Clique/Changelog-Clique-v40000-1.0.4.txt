@@ -1,0 +1,14 @@
+tag v40000-1.0.4
+72c135b44d9a534d0e23dd96c51578f57b58f3d2
+James Whitehead II <jnwhiteh@gmail.com>
+2010-10-13 11:38:43 +0100
+
+Tag release to fix a few reported issues (SV reset)
+
+
+--------------------
+
+James Whitehead II:
+	- Force a saved variables reset to fix the 'blizzframes' issue
+	- Remove database upgrade code for V3->V4.
+	- Fixed an issue preventing you from using mousewheel for macro binds

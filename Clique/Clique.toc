@@ -1,0 +1,30 @@
+## Interface: 40000 
+## Title: Clique
+## Author: Cladhaire
+## Version: v40000-1.0.4
+## Notes: Simply powerful click-casting interface
+## SavedVariables: CliqueDB, CliqueDB2
+## X-Curse-Packaged-Version: v40000-1.0.4
+## X-Curse-Project-Name: Clique
+## X-Curse-Project-ID: clique
+## X-Curse-Repository-ID: wow/clique/mainline
+
+AddonCore.lua
+Localization.enUS.lua
+
+ClickCastTemplate.xml
+
+Clique.xml
+
+Clique.lua
+Utils.lua
+
+BindConfig.lua
+
+OptionsPanel.lua
+FrameOptionsPanel.lua
+
+BlizzardFrames.lua
+
+# HeaderTest.xml
+# HeaderTest.lua
