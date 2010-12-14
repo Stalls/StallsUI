@@ -6,7 +6,7 @@ local normTex = TukuiCF["media"].normTex
 
 local function Shared(self, unit)
 	self.colors = TukuiDB.oUF_colors
-	self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+	self:RegisterForClicks("AnyUp")
 	self:SetScript('OnEnter', UnitFrame_OnEnter)
 	self:SetScript('OnLeave', UnitFrame_OnLeave)
 	
@@ -40,17 +40,11 @@ local function Shared(self, unit)
 	
 	health.frequentUpdates = true
 	
-	if TukuiCF.unitframes.unicolor == true then
-		health.colorDisconnected = false
-		health.colorClass = false
-		health:SetStatusBarColor(.3, .3, .3, 1)
-		health.bg:SetVertexColor(.1, .1, .1, 1)		
-	else
-		health.colorDisconnected = true
-		health.colorClass = true
-		health.colorReaction = true			
-	end
-	
+	health.colorDisconnected = false
+	health.colorClass = false
+	health:SetStatusBarColor(.3, .3, .3, 1)
+	health.bg:SetVertexColor(.1, .1, .1, 1)		
+		
 	local power = CreateFrame("StatusBar", nil, self)
 	power:SetHeight(TukuiDB.Scale(4*TukuiDB.raidscale))
 	power:SetPoint("TOPLEFT", health, "BOTTOMLEFT", 0, -TukuiDB.mult)
@@ -68,17 +62,14 @@ local function Shared(self, unit)
 	power.bg.multiplier = 0.4
 	self.Power.bg = power.bg
 	
-	if TukuiCF.unitframes.unicolor == true then
-		power.colorClass = true
-		power.bg.multiplier = 0.1				
-	else
-		power.colorPower = true
-	end
-	
+	power.colorClass = true
+	power.bg.multiplier = 0.1				
+		
 	local name = health:CreateFontString(nil, "OVERLAY")
     name:SetPoint("LEFT", health, 3, 0)
 	name:SetFont(font2, 12*TukuiDB.raidscale, "THINOUTLINE")
 	name:SetShadowOffset(1, -1)
+	--name.frequentUpdates = 0.2
 	self:Tag(name, "[Tukui:namemedium]")
 	self.Name = name
 	
@@ -178,7 +169,7 @@ local function Shared(self, unit)
 			maxOverflow = 1,
 		}
 	end
-	
+
 	return self
 end
 

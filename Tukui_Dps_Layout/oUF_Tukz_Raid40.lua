@@ -5,7 +5,7 @@ local font1 = TukuiCF["media"].font
 
 local function Shared(self, unit)
 	self.colors = TukuiDB.oUF_colors
-	self:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+	self:RegisterForClicks("AnyUp")
 	self:SetScript('OnEnter', UnitFrame_OnEnter)
 	self:SetScript('OnLeave', UnitFrame_OnLeave)
 	
@@ -30,20 +30,15 @@ local function Shared(self, unit)
 	health.PostUpdate = TukuiDB.PostUpdatePetColor
 	health.frequentUpdates = true
 	
-	if TukuiCF.unitframes.unicolor == true then
-		health.colorDisconnected = false
-		health.colorClass = false
-		health:SetStatusBarColor(.3, .3, .3, 1)
-		health.bg:SetVertexColor(.1, .1, .1, 1)		
-	else
-		health.colorDisconnected = true
-		health.colorClass = true
-		health.colorReaction = true			
-	end
+	health.colorDisconnected = false
+	health.colorClass = false
+	health:SetStatusBarColor(.3, .3, .3, 1)
+	health.bg:SetVertexColor(.1, .1, .1, 1)		
 		
 	local name = health:CreateFontString(nil, 'OVERLAY')
 	name:SetFont(font2, 13*TukuiDB.raidscale, "THINOUTLINE")
 	name:SetPoint("LEFT", self, "RIGHT", TukuiDB.Scale(5), 0)
+	--name.frequentUpdates = 0.2
 	self:Tag(name, '[Tukui:namemedium] [Tukui:dead][Tukui:afk]')
 	self.Name = name
 	
@@ -63,11 +58,11 @@ local function Shared(self, unit)
 		self:RegisterEvent('UNIT_THREAT_SITUATION_UPDATE', TukuiDB.UpdateThreat)
     end
 	
-	--local ReadyCheck = health:CreateTexture(nil, "OVERLAY")
-	--ReadyCheck:SetHeight(TukuiDB.Scale(12*TukuiDB.raidscale))
-	--ReadyCheck:SetWidth(TukuiDB.Scale(12*TukuiDB.raidscale))
-	--ReadyCheck:SetPoint('CENTER')
-	--self.ReadyCheck = ReadyCheck
+	local ReadyCheck = health:CreateTexture(nil, "OVERLAY")
+	ReadyCheck:SetHeight(TukuiDB.Scale(12*TukuiDB.raidscale))
+	ReadyCheck:SetWidth(TukuiDB.Scale(12*TukuiDB.raidscale))
+	ReadyCheck:SetPoint('CENTER')
+	self.ReadyCheck = ReadyCheck
 	
 	--local picon = self.Health:CreateTexture(nil, 'OVERLAY')
 	--picon:SetPoint('CENTER', self.Health)
