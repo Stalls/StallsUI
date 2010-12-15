@@ -98,7 +98,7 @@ tukuilocal.Slots = {
 }
 
 tukuilocal.popup_disableui = "Tukui doesn't work for this resolution, do you want to disable Tukui? (Cancel if you want to try another resolution)"
-tukuilocal.popup_install = "First time on Tukui V12 with this Character. You must reload UI to set Action Bars, Variables and Chat Frames."
+tukuilocal.popup_install = "First time on StallsUI with this Character. You must reload UI to set Action Bars, Variables and Chat Frames."
 tukuilocal.popup_2raidactive = "2 raid layouts are active, please select a layout."
 
 tukuilocal.merchant_repairnomoney = "You don't have enough money for repair!"
@@ -154,8 +154,8 @@ tukuilocal.core_autoinv_enable_c = "Autoinvite ON: "
 tukuilocal.core_autoinv_disable = "Autoinvite OFF"
 tukuilocal.core_wf_unlock = "WatchFrame unlock"
 tukuilocal.core_wf_lock = "WatchFrame lock"
-tukuilocal.core_welcome1 = "Welcome to |cffC495DDTukui|r, version "
-tukuilocal.core_welcome2 = "Type |cff00FFFF/uihelp|r for more info or visit www.tukui.org"
+tukuilocal.core_welcome1 = "Welcome to |cffC495DDStallsUI|r, version "
+tukuilocal.core_welcome2 = "Type |cff00FFFF/uihelp|r for more info, /tukui for ingame configuration visit www.itsgeek.com"
 
 tukuilocal.core_uihelp1 = "|cff00ff00General Slash Commands|r"
 tukuilocal.core_uihelp2 = "|cffFF0000/tracker|r - Tukui Arena Enemy Cooldown Tracker - Low-memory enemy PVP cooldown tracker. (Icon only)"

@@ -1,8 +1,29 @@
--- credits : Caellian - CaelNamePlates !
+--Base code by Dawn (dNameplates)
 if not TukuiCF["nameplate"].enable == true then return end
- 
-local tNamePlates = CreateFrame("Frame", nil, UIParent)
-tNamePlates:SetScript("OnEvent", function(self, event, ...) self[event](self, ...) end)
+
+local TEXTURE = TukuiCF["media"].empath6
+local FONT = TukuiCF["media"].font
+local FONTSIZE = 10
+local FONTFLAG = "THINOUTLINE"
+local hpHeight = 12
+local hpWidth = 110
+local iconSize = 25		--Size of all Icons, RaidIcon/ClassIcon/Castbar Icon
+local cbHeight = 5
+local cbWidth = 110
+local blankTex = TukuiCF["media"].blank
+local OVERLAY = [=[Interface\TargetingFrame\UI-TargetingFrame-Flash]=]
+local numChildren = -1
+local frames = {}
+local noscalemult = TukuiDB.mult * TukuiCF["general"].uiscale
+
+--Change defaults if we are showing health text or not
+if TukuiCF["nameplate"].showhealth ~= true then
+	hpHeight = 7
+	iconSize = 20
+end
+
+local NamePlates = CreateFrame("Frame", nil, UIParent)
+NamePlates:SetScript("OnEvent", function(self, event, ...) self[event](self, ...) end)
 SetCVar("bloatthreat", 0) -- stop resizing nameplate according to threat level.
 SetCVar("bloattest", 0)
 if TukuiCF["nameplate"].overlap == true then
@@ -10,476 +31,466 @@ if TukuiCF["nameplate"].overlap == true then
 else
 	SetCVar("spreadnameplates", "1")
 end
- 
-local barTexture = TukuiCF["media"].normTex
-local overlayTexture = [=[Interface\Tooltips\Nameplate-Border]=]
-local font, fontSize, fontOutline = TukuiCF["media"].font, 10, "OUTLINE"
-local glowTexture = TukuiCF["media"].glowTex
- 
-local backdrop = {
-	edgeFile = glowTexture, edgeSize = TukuiDB.Scale(3),
-	insets = {left = TukuiDB.Scale(3), right = TukuiDB.Scale(3), top = TukuiDB.Scale(3), bottom = TukuiDB.Scale(3)}
-}
- 
-local select = select
-local isValidFrame = function(frame)
-	if frame:GetName() then
-		return
-	end
- 
-	overlayRegion = select(2, frame:GetRegions())
- 
-	return overlayRegion and overlayRegion:GetObjectType() == "Texture" and overlayRegion:GetTexture() == overlayTexture
+
+local function QueueObject(parent, object)
+	parent.queue = parent.queue or {}
+	parent.queue[object] = true
 end
- 
-local updateTime = function(self, curValue)
-	local minValue, maxValue = self:GetMinMaxValues()
-	if self.channeling then
-		self.time:SetFormattedText("%.1f ", curValue)
-		self.castName:SetText(select(1, (UnitChannelInfo("target"))))
-	else
-		self.time:SetFormattedText("%.1f ", maxValue - curValue)
-		self.castName:SetText(select(1, (UnitCastingInfo("target"))))
-	end
-end
- 
-local function round(num, idp)
-  if idp and idp > 0 then
-    local mult = 10^idp
-    return math.floor(num * mult + 0.5) / mult
-  end
-  return math.floor(num + 0.5)
-end
- 
-local ShortValue = function(value)
-	if value >= 1e6 then
-		return ("%.1fm"):format(value / 1e6):gsub("%.?0+([km])$", "%1")
-	elseif value >= 1e3 or value <= -1e3 then
-		return ("%.1fk"):format(value / 1e3):gsub("%.?0+([km])$", "%1")
-	else
-		return value
-	end
-end
- 
-local function CheckTarget(self)
-	if UnitName("target") == self.oldname:GetText() and self:GetAlpha() == 1 then
-		return true
-	else
-		return false
-	end
-end
- 
-local function CheckClass(self)
-	local ULx, ULy, LLx, LLy, URx, URy, LRx, LRy = self.icon:GetTexCoord()
-	if ULx == 0.5 and ULy == 0.5 and LLx == 0.5 and LLy == 0.75 and URx == 0.75 and URy == 0.5 and LRx == 0.75 and LRy == 0.75 then
-		return false
-	else
-		return true
-	end
-end
- 
-local threatUpdate = function(self, elapsed)
-	self.elapsed = self.elapsed + elapsed
-	if self.elapsed >= 0.2 then
-		--Filter Nameplates
-		if TukuiDB.NPCList[self.oldname:GetText()] then
-			self:SetAlpha(0)
-			if not InCombatLockdown() then
-				self:SetScale(0.00001)
-			end
-			return
+
+local function HideObjects(parent)
+	for object in pairs(parent.queue) do
+		if(object:GetObjectType() == 'Texture') then
+			object:SetTexture(nil)
+			object.SetTexture = TukuiDB.dummy
 		else
-			if not InCombatLockdown() then self:SetScale(1) end
-			if TukuiCF["nameplate"].enhancethreat == true then
-				if not self.oldglow:IsShown() then
-					if InCombatLockdown() and not CheckClass(self) then
-						if TukuiDB.Role == "Tank" then
-							self.healthBar.hpGlow:SetBackdropBorderColor(1, 0, 0)
-							self.healthBar:SetStatusBarColor(1, 0, 0)
-							self.healthBar.hpBackground:SetVertexColor(0.3, 0, 0)
-						else
-							self.healthBar.hpGlow:SetBackdropBorderColor(0, 1, 0)
-							self.healthBar:SetStatusBarColor(0, 1, 0)
-							self.healthBar.hpBackground:SetVertexColor(0, 0.3, 0)
-						end
-					else
-						if not CheckTarget(self) then
-							self.healthBar.hpGlow:SetBackdropBorderColor(0, 0, 0)
-						end
-						self.healthBar:SetStatusBarColor(self.r, self.g, self.b)
-						self.healthBar.hpBackground:SetVertexColor((self.r * 0.3), (self.g * 0.3), (self.b * 0.3))
-					end
+			object:Hide()
+			object.Show = TukuiDB.dummy
+		end
+	end
+end
+
+local function CheckBlacklist(frame, ...)
+	if PlateBlacklist[frame.name:GetText()] then
+		frame:SetScript("OnUpdate", function() end)
+		frame.hp:Hide()
+		frame.cb:Hide()
+		frame.overlay:Hide()
+		frame.oldlevel:Hide()
+	end
+end
+
+local function ForEachPlate(functionToRun, ...)
+	for frame in pairs(frames) do
+		if frame:IsShown() then
+			functionToRun(frame, ...)
+		end
+	end
+end
+
+local goodR, goodG, goodB = unpack(TukuiCF["nameplate"].goodcolor)
+local badR, badG, badB = unpack(TukuiCF["nameplate"].badcolor)
+local transitionR, transitionG, transitionB = unpack(TukuiCF["nameplate"].transitioncolor)
+local function UpdateThreat(frame, elapsed)
+	frame.hp:Show()
+	frame.overlay:Show()
+	
+	if TukuiCF["nameplate"].enhancethreat ~= true then
+		if(frame.region:IsShown()) then
+			local _, val = frame.region:GetVertexColor()
+			if(val > 0.7) then
+				frame.healthborder_tex:SetTexture(transitionR, transitionG, transitionB)
+			else
+				frame.healthborder_tex:SetTexture(badR, badG, badB)
+			end
+		else
+			frame.healthborder_tex:SetTexture(0.6, 0.6, 0.6)
+		end
+	else
+		if not frame.region:IsShown() then
+			if InCombatLockdown() and frame.hasclass ~= true then
+				--No Threat
+				if TukuiDB.Role == "Tank" then
+					frame.hp:SetStatusBarColor(badR, badG, badB)
+					frame.hp.hpbg:SetTexture(badR, badG, badB, 0.25)
 				else
-					local r, g, b = self.oldglow:GetVertexColor()
-					if g + b == 0 then
-						if TukuiDB.Role == "Tank" then
-							self.healthBar.hpGlow:SetBackdropBorderColor(0, 1, 0)
-							self.healthBar:SetStatusBarColor(0, 1, 0)
-							self.healthBar.hpBackground:SetVertexColor(0, 0.3, 0)
-						else
-							self.healthBar.hpGlow:SetBackdropBorderColor(1, 0, 0)
-							self.healthBar:SetStatusBarColor(1, 0, 0)
-							self.healthBar.hpBackground:SetVertexColor(0.3, 0, 0)
-						end
-					else
-						self.healthBar:SetStatusBarColor(1, 1, 0)
-						self.healthBar.hpGlow:SetBackdropBorderColor(1, 1, 0)
-						self.healthBar.hpBackground:SetVertexColor(0.3, 0.3, 0)
-					end
+					frame.hp:SetStatusBarColor(goodR, goodG, goodB)
+					frame.hp.hpbg:SetTexture(goodR, goodG, goodB, 0.25)
+				end		
+			else
+				--Set colors to their original, not in combat
+				frame.hp:SetStatusBarColor(frame.hp.rcolor, frame.hp.gcolor, frame.hp.bcolor)
+			end
+		else
+			--Ok we either have threat or we're losing/gaining it
+			local r, g, b = frame.region:GetVertexColor()
+			if g + b == 0 then
+				--Have Threat
+				if TukuiDB.Role == "Tank" then
+					frame.hp:SetStatusBarColor(goodR, goodG, goodB)
+					frame.hp.hpbg:SetTexture(goodR, goodG, goodB, 0.25)
+				else
+					frame.hp:SetStatusBarColor(badR, badG, badB)
+					frame.hp.hpbg:SetTexture(badR, badG, badB, 0.25)
 				end
 			else
-				if not self.oldglow:IsShown() and not CheckClass(self) then
-					self.healthBar.hpGlow:SetBackdropBorderColor(0, 0, 0)
-				elseif not CheckTarget(self) then
-					local r, g, b = self.oldglow:GetVertexColor()
-					if g + b == 0 then
-						self.healthBar.hpGlow:SetBackdropBorderColor(1, 0, 0)
-					else
-						self.healthBar.hpGlow:SetBackdropBorderColor(1, 1, 0)
-					end
-				end
-				self.healthBar:SetStatusBarColor(self.r, self.g, self.b)
-			end
- 
-			local minHealth, maxHealth = self.oldhealth:GetMinMaxValues()
-			local valueHealth = self.oldhealth:GetValue()
-			local d = math.floor((valueHealth / maxHealth) * 100)
- 
-			if TukuiCF["nameplate"].showhealth == true then
-				self.healthBar.percent:SetText(ShortValue(valueHealth).." - "..(string.format("%d%%", math.floor((valueHealth/maxHealth)*100))))
-			end
- 
-			if CheckTarget(self) then
-				self.healthBar.hpGlow:SetBackdropBorderColor(0.95, 0.95, 0.95)
-				self.name:SetTextColor(1, 1, 0)
-			else
-				self.name:SetTextColor(1,1,1)
-			end				
- 
-			if CheckClass(self) then
-				if (d <= 45 and d >= 20) then
-					self.healthBar.hpGlow:SetBackdropBorderColor(1, 1, 0)
-				elseif(d < 20) then
-					self.healthBar.hpGlow:SetBackdropBorderColor(1, 0, 0)
-				else
-					if not CheckTarget(self) then
-						self.healthBar.hpGlow:SetBackdropBorderColor(0, 0, 0)
-					else
-						self.healthBar.hpGlow:SetBackdropBorderColor(0.95, 0.95, 0.95)
-					end
-				end
+				--Losing/Gaining Threat
+				frame.hp:SetStatusBarColor(transitionR, transitionG, transitionB)	
+				frame.hp.hpbg:SetTexture(transitionR, transitionG, transitionB, 0.25)
 			end
 		end
-		self.elapsed = 0
 	end
-end
- 
-local updatePlate = function(self)
-	--Filter Nameplates
-	if TukuiDB.NPCList[self.oldname:GetText()] and not InCombatLockdown() then
-		self:Hide()
-		return
-	else
-		if not InCombatLockdown() then self:Show() end
-		local r, g, b = self.healthBar:GetStatusBarColor()
-		local newr, newg, newb
-		if g + b == 0 then
-			-- Hostile unit
-			newr, newg, newb = 0.69, 0.31, 0.31
-			self.healthBar:SetStatusBarColor(0.69, 0.31, 0.31)
-		elseif r + b == 0 then
-			-- Friendly unit
-			newr, newg, newb = 0.33, 0.59, 0.33
-			self.healthBar:SetStatusBarColor(0.33, 0.59, 0.33)
-		elseif r + g == 0 then
-			-- Friendly player
-			newr, newg, newb = 0.31, 0.45, 0.63
-			self.healthBar:SetStatusBarColor(0.31, 0.45, 0.63)
-		elseif 2 - (r + g) < 0.05 and b == 0 then
-			-- Neutral unit
-			newr, newg, newb = 0.65, 0.63, 0.35
-			self.healthBar:SetStatusBarColor(0.65, 0.63, 0.35)
-		else
-			-- Hostile player - class colored.
-			newr, newg, newb = r, g, b
-		end
- 
-		self.r, self.g, self.b = newr, newg, newb
- 
-		self.healthBar:ClearAllPoints()
-		self.healthBar:SetPoint("CENTER", self.healthBar:GetParent(), 0, TukuiDB.Scale(3))
-		if TukuiCF["nameplate"].showhealth == true then
-			self.healthBar:SetHeight(TukuiDB.Scale(12))
-		else
-			self.healthBar:SetHeight(TukuiDB.Scale(9))
-		end
-		self.healthBar:SetWidth(TukuiDB.Scale(110))
-		self.name:SetText(self.oldname:GetText())
- 
-		self.healthBar.hpBackground:SetVertexColor(self.r * 0.30, self.g * 0.30, self.b * 0.30)
-		self.healthBar.hpBackground:SetAlpha(0.9)
- 
-		self.castBar:ClearAllPoints()
-		self.castBar:SetPoint("TOP", self.healthBar, "BOTTOM", 0, TukuiDB.Scale(-4))
-		self.castBar:SetHeight(TukuiDB.Scale(5))
-		self.castBar:SetWidth(TukuiDB.Scale(110))
- 
-		self.highlight:ClearAllPoints()
-		self.highlight:SetAllPoints(self.healthBar)
- 
-		local level, elite, mylevel = tonumber(self.level:GetText()), self.elite:IsShown(), UnitLevel("player")
-		self.level:ClearAllPoints()
-		self.level:SetPoint("RIGHT", self.healthBar, "RIGHT", TukuiDB.Scale(-2), 0)
-		if self.boss:IsShown() then
-			self.level:SetText("B")
-			self.level:SetTextColor(0.8, 0.05, 0)
-			self.level:Show()
-		elseif not elite and level == mylevel then
-			self.level:Hide()
-		else
-			self.level:SetText(level..(elite and "+" or ""))
-		end
-	end
-end
- 
-local fixCastbar = function(self)
-	self.castbarOverlay:Hide()
- 
-	self:SetHeight(TukuiDB.Scale(5))
-	self:ClearAllPoints()
-	self:SetPoint("TOP", self.healthBar, "BOTTOM", 0, TukuiDB.Scale(-4))
-end
- 
-local colorCastBar = function(self, shielded)
-	if shielded then
-		self:SetStatusBarColor(0.8, 0.05, 0)
-		self.cbGlow:SetBackdropBorderColor(0.75, 0.75, 0.75)
-		self.icGlow:SetBackdropBorderColor(0.75, 0.75, 0.75)
-	else
-		self.cbGlow:SetBackdropBorderColor(0, 0, 0)
-		self.icGlow:SetBackdropBorderColor(0, 0, 0)
-	end
-end
- 
-local onSizeChanged = function(self)
-	self.needFix = true
-end
- 
-local onValueChanged = function(self, curValue)
-	updateTime(self, curValue)
-	if self.needFix then
-		fixCastbar(self)
-		self.needFix = nil
-	end
-end
- 
-local onShow = function(self)
-	self.channeling  = UnitChannelInfo("target")
-	fixCastbar(self)
-	colorCastBar(self, self.shieldedRegion:IsShown())
-end
- 
-local onHide = function(self)
-	self.highlight:Hide()
-	self.healthBar.hpGlow:SetBackdropBorderColor(0, 0, 0)
-end
- 
-local onEvent = function(self, event, unit)
-	if unit == "target" then
-		if self:IsShown() then
-			colorCastBar(self, event == "UNIT_SPELLCAST_NOT_INTERRUPTIBLE")
-		end
-	end
-end
- 
-local createPlate = function(frame)
-	if frame.done then return end
- 
-	frame.nameplate = true
-	frame.healthBar, frame.castBar = frame:GetChildren()
-	local healthBar, castBar = frame.healthBar, frame.castBar
-	local glowRegion, overlayRegion, castbarOverlay, shieldedRegion, spellIconRegion, highlightRegion, nameTextRegion, levelTextRegion, bossIconRegion, raidIconRegion, stateIconRegion = frame:GetRegions()
-	frame.oldhealth = healthBar
- 
-	frame.oldname = nameTextRegion
-	nameTextRegion:Hide()
- 
-	local newNameRegion = frame:CreateFontString()
-	newNameRegion:SetPoint("BOTTOM", healthBar, "TOP", 0, TukuiDB.Scale(3))
-	newNameRegion:SetFont(font, fontSize, fontOutline)
-	newNameRegion:SetTextColor(1, 1, 1)
-	newNameRegion:SetShadowOffset(TukuiDB.mult, -TukuiDB.mult)
-	frame.name = newNameRegion
- 
-	frame.level = levelTextRegion
-	levelTextRegion:SetFont(font, fontSize, fontOutline)
-	levelTextRegion:SetShadowOffset(TukuiDB.mult, -TukuiDB.mult)
- 
-	healthBar:SetStatusBarTexture(barTexture)
- 
-	healthBar.hpBackground = healthBar:CreateTexture(nil, "BORDER")
-	healthBar.hpBackground:SetAllPoints(healthBar)
-	healthBar.hpBackground:SetTexture(TukuiCF["media"].blank)
-	healthBar.hpBackground:SetVertexColor(0.15, 0.15, 0.15)
- 
-	healthBar.hpGlow = CreateFrame("Frame", nil, healthBar)
-	healthBar.hpGlow:SetFrameLevel(healthBar:GetFrameLevel() -1 > 0 and healthBar:GetFrameLevel() -1 or 0)
-	healthBar.hpGlow:SetPoint("TOPLEFT", healthBar, "TOPLEFT", TukuiDB.Scale(-3), TukuiDB.Scale(3))
-	healthBar.hpGlow:SetPoint("BOTTOMRIGHT", healthBar, "BOTTOMRIGHT", TukuiDB.Scale(3), TukuiDB.Scale(-3))
-	healthBar.hpGlow:SetBackdrop(backdrop)
-	healthBar.hpGlow:SetBackdropColor(0, 0, 0)
-	healthBar.hpGlow:SetBackdropBorderColor(0, 0, 0)
- 
+	
+	-- show current health value
+	local minHealth, maxHealth = frame.healthOriginal:GetMinMaxValues()
+	local valueHealth = frame.healthOriginal:GetValue()
+	local d =(valueHealth/maxHealth)*100
+	
 	if TukuiCF["nameplate"].showhealth == true then
-		healthBar.percent = healthBar:CreateFontString(nil, "OVERLAY")
-		healthBar.percent:SetFont(font, fontSize, fontOutline)
-		healthBar.percent:SetPoint("CENTER", healthBar, "CENTER", 0, 0)
-		healthBar.percent:SetTextColor(1, 1, 1)
-		healthBar.percent:SetShadowOffset(TukuiDB.mult, -TukuiDB.mult)
-		healthBar.percent:SetJustifyH("CENTER")
+		frame.hp.value:SetText(TukuiDB.ShortValue(valueHealth).." - "..(string.format("%d%%", math.floor((valueHealth/maxHealth)*100))))
 	end
- 
-	castBar.castbarOverlay = castbarOverlay
-	castBar.healthBar = healthBar
-	castBar.shieldedRegion = shieldedRegion
-	castBar:SetStatusBarTexture(barTexture)
- 
-	castBar:HookScript("OnShow", onShow)
-	castBar:HookScript("OnSizeChanged", onSizeChanged)
-	castBar:HookScript("OnValueChanged", onValueChanged)
-	castBar:HookScript("OnEvent", onEvent)
-	castBar:RegisterEvent("UNIT_SPELLCAST_INTERRUPTIBLE")
-	castBar:RegisterEvent("UNIT_SPELLCAST_NOT_INTERRUPTIBLE")
- 
-	castBar.time = castBar:CreateFontString(nil, "ARTWORK")
-	castBar.time:SetPoint("RIGHT", castBar, "LEFT", TukuiDB.Scale(-2), 0)
-	castBar.time:SetFont(font, fontSize, fontOutline)
-	castBar.time:SetTextColor(1, 1, 1)
-	castBar.time:SetShadowOffset(TukuiDB.mult, -TukuiDB.mult)
- 
-	castBar.castName = castBar:CreateFontString(nil, "OVERLAY")
-	castBar.castName:SetFont(font, fontSize, fontOutline)
-	castBar.castName:SetPoint("TOP", castBar, "BOTTOM", 0, -TukuiDB.mult)
-	castBar.castName:SetTextColor(1, 1, 1)
-	castBar.castName:SetShadowOffset(TukuiDB.mult, -TukuiDB.mult)
-	castBar.castName:SetJustifyH("CENTER")		
- 
-	castBar.cbBackground = castBar:CreateTexture(nil, "BACKGROUND")
-	castBar.cbBackground:SetAllPoints(castBar)
-	castBar.cbBackground:SetTexture(TukuiCF["media"].blank)
-	castBar.cbBackground:SetVertexColor(0.15, 0.15, 0.15)
- 
-	castBar.cbGlow = CreateFrame("Frame", nil, castBar)
-	castBar.cbGlow:SetFrameLevel(castBar:GetFrameLevel() -1 > 0 and castBar:GetFrameLevel() -1 or 0)
-	castBar.cbGlow:SetPoint("TOPLEFT", castBar, "TOPLEFT", TukuiDB.Scale(-3), TukuiDB.Scale(3))
-	castBar.cbGlow:SetPoint("BOTTOMRIGHT", castBar, "BOTTOMRIGHT", TukuiDB.Scale(3), TukuiDB.Scale(-3))
-	castBar.cbGlow:SetBackdrop(backdrop)
-	castBar.cbGlow:SetBackdropColor(0.25, 0.25, 0.25, 0)
-	castBar.cbGlow:SetBackdropBorderColor(0, 0, 0)
- 
-	castBar.Holder = CreateFrame("Frame", nil, castBar)
-	castBar.Holder:SetFrameLevel(castBar.Holder:GetFrameLevel() + 1)
-	castBar.Holder:SetAllPoints()
- 
-	-- some frame strata dancing
-	castBar.Hold = CreateFrame("Frame", nil, healthBar)
-	castBar.Hold:SetPoint("TOPLEFT", healthBar, "TOPLEFT", 0, 0)
-	castBar.Hold:SetPoint("BOTTOMRIGHT", healthBar, "BOTTOMRIGHT", 0, 0)
-	castBar.Hold:SetFrameLevel(10)
-	castBar.Hold:SetFrameStrata("MEDIUM")	
- 
-	local cIconTex = castBar.Hold:CreateTexture(nil, "OVERLAY")
-	cIconTex:SetPoint("RIGHT", healthBar, "LEFT", TukuiDB.Scale(-4), TukuiDB.Scale(4))
-	cIconTex:SetTexture("Interface\\WorldStateFrame\\Icons-Classes")
-	cIconTex:SetHeight(22)
-	cIconTex:SetWidth(22)
-	frame.icon = cIconTex
- 
-	spellIconRegion:ClearAllPoints()
-	spellIconRegion:SetParent(castBar)
-	spellIconRegion:SetTexCoord(.08, .92, .08, .92)
-	spellIconRegion:SetPoint("BOTTOMLEFT", castBar, "BOTTOMRIGHT", 5, 0.25)
-	spellIconRegion:SetSize(TukuiDB.Scale(22), TukuiDB.Scale(22))
- 
-	spellIconRegion.IconBackdrop = CreateFrame("Frame", nil, castBar)
-	spellIconRegion.IconBackdrop:SetPoint("TOPLEFT", spellIconRegion, "TOPLEFT", TukuiDB.Scale(-3), TukuiDB.Scale(3))
-	spellIconRegion.IconBackdrop:SetPoint("BOTTOMRIGHT", spellIconRegion, "BOTTOMRIGHT", TukuiDB.Scale(3), TukuiDB.Scale(-3))
-	spellIconRegion.IconBackdrop:SetBackdrop(backdrop)
-	spellIconRegion.IconBackdrop:SetBackdropColor(0, 0, 0)
-	spellIconRegion.IconBackdrop:SetBackdropBorderColor(0, 0, 0)
- 
-	highlightRegion:SetTexture(barTexture)
-	highlightRegion:SetVertexColor(0.25, 0.25, 0.25)
-	frame.highlight = highlightRegion
- 
-	raidIconRegion:ClearAllPoints()
-	raidIconRegion:SetPoint("CENTER", healthBar, "CENTER", 0, TukuiDB.Scale(35))
-	raidIconRegion:SetSize(TukuiDB.Scale(30), TukuiDB.Scale(30))
-	raidIconRegion:SetTexture(TukuiCF["media"].raidicons)	
- 
-	frame.oldglow = glowRegion
-	frame.elite = stateIconRegion
-	frame.boss = bossIconRegion
-	castBar.icGlow = spellIconRegion.IconBackdrop
- 
-	frame.done = true
- 
-	glowRegion:SetTexture(nil)
-	overlayRegion:SetTexture(nil)
-	shieldedRegion:SetTexture(nil)
-	castbarOverlay:SetTexture(nil)
-	stateIconRegion:SetTexture(nil)
-	bossIconRegion:SetTexture(nil)
- 
-	updatePlate(frame)
-	frame:SetScript("OnShow", updatePlate)
- 
-	frame:SetScript("OnHide", onHide)
- 
-	frame.elapsed = 0
- 
-	frame:SetScript("OnUpdate", UpdateClass)
-	frame:HookScript("OnUpdate", threatUpdate)
+		
+	--Change frame style if the frame is our target or not
+	if UnitName("target") == frame.name:GetText() and frame:GetAlpha() == 1 then
+		--Targetted Unit
+		frame.name:SetTextColor(1, 1, 0)
+	else
+		--Not Targetted
+		frame.name:SetTextColor(1, 1, 1)
+	end
+	
+	--Setup frame shadow to change depending on enemy players health, also setup targetted unit to have white shadow
+	if frame.hasclass == true then
+		if(d <= 50 and d >= 21) then
+			frame.healthborder_tex:SetTexture(1, 1, 0)
+		elseif(d < 21) then
+			frame.healthborder_tex:SetTexture(1, 0, 0)
+		else
+			frame.healthborder_tex:SetTexture(0.6, 0.6, 0.6)
+		end
+	elseif frame.hasclass ~= true then
+		frame.healthborder_tex:SetTexture(0.6, 0.6, 0.6)
+	end
 end
- 
--- update class func
-function UpdateClass(frame)
-	local r, g, b = frame.healthBar:GetStatusBarColor();
-	local r, g, b = floor(r*100+.5)/100, floor(g*100+.5)/100, floor(b*100+.5)/100;
-	local classname = "";
-	local hasclass = 0;
+
+local function UpdateObjects(frame)
+	frame = frame:GetParent()
+	
+	local r, g, b = frame.hp:GetStatusBarColor()
+	local r, g, b = floor(r*100+.5)/100, floor(g*100+.5)/100, floor(b*100+.5)/100
+	local classname = ""
+	
+	frame.hp:ClearAllPoints()
+	frame.hp:SetSize(hpWidth, hpHeight)	
+	frame.hp:SetPoint('CENTER', frame, 0, -10)
+	frame.hp:GetStatusBarTexture():SetHorizTile(true)
+
+	--create variable for original colors
+	frame.hp.rcolor, frame.hp.gcolor, frame.hp.bcolor = frame.hp:GetStatusBarColor()
+	frame.hp.hpbg:SetTexture(frame.hp.rcolor, frame.hp.gcolor, frame.hp.bcolor, 0.25)
+	
+	--Class Icons
 	for class, color in pairs(RAID_CLASS_COLORS) do
 		if RAID_CLASS_COLORS[class].r == r and RAID_CLASS_COLORS[class].g == g and RAID_CLASS_COLORS[class].b == b then
-			classname = class;
+			classname = class
 		end
 	end
 	if (classname) then
-		texcoord = CLASS_BUTTONS[classname];
+		texcoord = CLASS_BUTTONS[classname]
 		if texcoord then
-			hasclass = 1;
+			frame.hasclass = true
 		else
-			texcoord = {0.5, 0.75, 0.5, 0.75};
-			hasclass = 0;
+			texcoord = {0.5, 0.75, 0.5, 0.75}
+			frame.hasclass = false
 		end
 	else
-		texcoord = {0.5, 0.75, 0.5, 0.75};
-		hasclass = 0;
+		texcoord = {0.5, 0.75, 0.5, 0.75}
+		frame.hasclass = false
 	end
-	frame.icon:SetTexCoord(texcoord[1],texcoord[2],texcoord[3],texcoord[4]);
+	
+	if frame.hp.rcolor == 0 and frame.hp.gcolor == 0 and frame.hp.bcolor ~= 0 then
+		texcoord = {0.5, 0.75, 0.5, 0.75}
+		frame.hasclass = true
+	end
+	frame.class:SetTexCoord(texcoord[1],texcoord[2],texcoord[3],texcoord[4])
+	
+	--Set the name text
+	frame.name:SetText(frame.oldname:GetText())
+	
+	--Setup level text
+	local level, elite, mylevel = tonumber(frame.oldlevel:GetText()), frame.elite:IsShown(), UnitLevel("player")
+	frame.hp.level:ClearAllPoints()
+	if TukuiCF["nameplate"].showhealth == true then
+		frame.hp.level:SetPoint("RIGHT", frame.hp, "RIGHT", 2, 0)
+	else
+		frame.hp.level:SetPoint("RIGHT", frame.hp, "LEFT", -1, 0)
+	end
+	
+	frame.hp.level:SetTextColor(frame.oldlevel:GetTextColor())
+	if frame.boss:IsShown() then
+		frame.hp.level:SetText("B")
+		frame.hp.level:SetTextColor(0.8, 0.05, 0)
+		frame.hp.level:Show()
+	elseif not elite and level == mylevel then
+		frame.hp.level:Hide()
+	else
+		frame.hp.level:SetText(level..(elite and "+" or ""))
+	end
+	
+	HideObjects(frame)
+end
+
+local function UpdateCastbar(frame)
+	frame:ClearAllPoints()
+	frame:SetSize(cbWidth, cbHeight)
+	frame:SetPoint('TOP', frame:GetParent().hp, 'BOTTOM', 0, -8)
+	frame:GetStatusBarTexture():SetHorizTile(true)
+
+	if(not frame.shield:IsShown()) then
+		frame:SetStatusBarColor(1, 0.3, 0.3)
+	end
 end	
- 
-local numKids = 0
-tNamePlates:SetScript("OnUpdate", function(self, elapsed)
- 
-	local newNumKids = WorldFrame:GetNumChildren()
-	if newNumKids ~= numKids then
-		for i = numKids + 1, newNumKids do
-			local frame = select(i, WorldFrame:GetChildren())
- 
-			if isValidFrame(frame) then
-				createPlate(frame)
-			end
-		end
-		numKids = newNumKids
+
+local function UpdateCastText(frame, curValue)
+	local minValue, maxValue = frame:GetMinMaxValues()
+	
+	if UnitChannelInfo("target") then
+		frame.time:SetFormattedText("%.1f ", curValue)
+		frame.name:SetText(select(1, (UnitChannelInfo("target"))))
 	end
+	
+	if UnitCastingInfo("target") then
+		frame.time:SetFormattedText("%.1f ", maxValue - curValue)
+		frame.name:SetText(select(1, (UnitCastingInfo("target"))))
+	end
+end
+
+local OnValueChanged = function(self, curValue)
+	UpdateCastText(self, curValue)
+	if self.needFix then
+		UpdateCastbar(self)
+		self.needFix = nil
+	end
+end
+
+local OnSizeChanged = function(self)
+	self.needFix = true
+end
+
+local function SkinObjects(frame)
+	local hp, cb = frame:GetChildren()
+	local threat, hpborder, cbshield, cbborder, cbicon, oldoverlay, oldname, oldlevel, bossicon, raidicon, elite = frame:GetRegions()
+	frame.healthOriginal = hp
+	
+	--Just make sure these are correct
+	hp:SetFrameLevel(9)
+	cb:SetFrameLevel(9)
+	
+	--Create Health Backdrop Frame
+	local healthbackdrop = CreateFrame("Frame", nil, hp)
+	healthbackdrop:SetPoint("TOPLEFT", hp, "TOPLEFT", -noscalemult*3, noscalemult*3)
+	healthbackdrop:SetPoint("BOTTOMRIGHT", hp, "BOTTOMRIGHT", noscalemult*3, -noscalemult*3)
+	healthbackdrop:SetFrameLevel(1)
+	healthbackdrop_tex = healthbackdrop:CreateTexture(nil, "BACKGROUND")
+	healthbackdrop_tex:SetAllPoints(healthbackdrop)
+	healthbackdrop_tex:SetTexture(0.1, 0.1, 0.1)
+	frame.healthbackdrop = healthbackdrop_tex
+	
+	local healthborder = CreateFrame("Frame", nil, hp)
+	healthborder:SetPoint("TOPLEFT", hp, "TOPLEFT", -noscalemult*2, noscalemult*2)
+	healthborder:SetPoint("BOTTOMRIGHT", hp, "BOTTOMRIGHT", noscalemult*2, -noscalemult*2)
+	healthborder:SetFrameLevel(hp:GetFrameLevel() - 2)
+	healthborder_tex = healthborder:CreateTexture(nil, "BACKGROUND")
+	healthborder_tex:SetAllPoints(healthborder)
+	healthborder_tex:SetTexture(0.6, 0.6, 0.6)	
+	frame.healthborder_tex = healthborder_tex
+	
+	--Create Health Backdrop Frame
+	local healthbackdrop2 = CreateFrame("Frame", nil, hp)
+	healthbackdrop2:SetPoint("TOPLEFT", healthborder, "TOPLEFT", noscalemult, -noscalemult)
+	healthbackdrop2:SetPoint("BOTTOMRIGHT", healthborder, "BOTTOMRIGHT", -noscalemult, noscalemult)
+	healthbackdrop2:SetFrameLevel(hp:GetFrameLevel() - 1)
+	healthbackdrop2_tex = healthbackdrop2:CreateTexture(nil, "BORDER")
+	healthbackdrop2_tex:SetAllPoints(healthbackdrop2)
+	healthbackdrop2_tex:SetTexture(0.1, 0.1, 0.1)
+	
+	hp:HookScript('OnShow', UpdateObjects)
+	hp:SetStatusBarTexture(TEXTURE)
+	frame.hp = hp
+	
+	--Actual Background for the Healthbar
+	hp.hpbg = hp:CreateTexture(nil, 'BORDER')
+	hp.hpbg:SetAllPoints(hp)
+	hp.hpbg:SetTexture(1,1,1,0.25)  
+	
+	--Create Overlay Highlight
+	frame.overlay = frame:CreateTexture(nil, "HIGHLIGHT")
+	frame.overlay:SetAllPoints(hp)
+	frame.overlay:SetTexture(1,1,1,0.2)
+	
+	--Create Name
+	hp.level = hp:CreateFontString(nil, "OVERLAY")
+	hp.level:SetFont(FONT, FONTSIZE, FONTFLAG)
+	hp.level:SetTextColor(1, 1, 1)
+	hp.level:SetShadowOffset(TukuiDB.mult, -TukuiDB.mult)	
+	
+	--Needed for level text
+	frame.oldlevel = oldlevel
+	frame.boss = bossicon
+	frame.elite = elite
+	
+	--Create Health Text
+	if TukuiCF["nameplate"].showhealth == true then
+		hp.value = hp:CreateFontString(nil, "OVERLAY")	
+		hp.value:SetFont(FONT, FONTSIZE, FONTFLAG)
+		hp.value:SetPoint("CENTER", hp)
+		hp.value:SetTextColor(1,1,1)
+		hp.value:SetShadowOffset(TukuiDB.mult, -TukuiDB.mult)
+	end
+	
+	--Create Castbar Backdrop Frame
+	local castbarbackdrop = CreateFrame("Frame", nil, cb)
+	castbarbackdrop:SetPoint("TOPLEFT", cb, "TOPLEFT", -noscalemult*3, noscalemult*3)
+	castbarbackdrop:SetPoint("BOTTOMRIGHT", cb, "BOTTOMRIGHT", noscalemult*3, -noscalemult*3)
+	castbarbackdrop:SetFrameLevel(cb:GetFrameLevel() - 3)
+	castbarbackdrop_tex = castbarbackdrop:CreateTexture(nil, "BACKGROUND")
+	castbarbackdrop_tex:SetAllPoints(castbarbackdrop)
+	castbarbackdrop_tex:SetTexture(0.1, 0.1, 0.1)
+	
+	local castbarborder = CreateFrame("Frame", nil, cb)
+	castbarborder:SetPoint("TOPLEFT", cb, "TOPLEFT", -noscalemult*2, noscalemult*2)
+	castbarborder:SetPoint("BOTTOMRIGHT", cb, "BOTTOMRIGHT", noscalemult*2, -noscalemult*2)
+	castbarborder:SetFrameLevel(cb:GetFrameLevel() - 2)
+	castbarborder_tex = castbarborder:CreateTexture(nil, "BACKGROUND")
+	castbarborder_tex:SetAllPoints(castbarborder)
+	castbarborder_tex:SetTexture(0.6, 0.6, 0.6)	
+	
+	--Create Health Backdrop Frame
+	local castbarbackdrop2 = CreateFrame("Frame", nil, cb)
+	castbarbackdrop2:SetPoint("TOPLEFT", cb, "TOPLEFT", -noscalemult, noscalemult)
+	castbarbackdrop2:SetPoint("BOTTOMRIGHT", cb, "BOTTOMRIGHT", noscalemult, -noscalemult)
+	castbarbackdrop2:SetFrameLevel(cb:GetFrameLevel() - 1)
+	castbarbackdrop2_tex = castbarbackdrop2:CreateTexture(nil, "BACKGROUND")
+	castbarbackdrop2_tex:SetAllPoints(castbarbackdrop2)
+	castbarbackdrop2_tex:SetTexture(0.1, 0.1, 0.1)
+	
+	--Setup CastBar Icon
+	cbicon:ClearAllPoints()
+	cbicon:SetPoint("TOPLEFT", hp, "TOPRIGHT", 8, 0)		
+	cbicon:SetSize(iconSize, iconSize)
+	cbicon:SetTexCoord(.07, .93, .07, .93)
+	cbicon:SetDrawLayer("OVERLAY")
+
+	-- Create Cast Icon Backdrop frame
+	local castbarbackdrop_tex = cb:CreateTexture(nil, "BACKGROUND")
+	castbarbackdrop_tex:SetPoint("TOPLEFT", cbicon, "TOPLEFT", -noscalemult*3, noscalemult*3)
+	castbarbackdrop_tex:SetPoint("BOTTOMRIGHT", cbicon, "BOTTOMRIGHT", noscalemult*3, -noscalemult*3)
+	castbarbackdrop_tex:SetTexture(0.1, 0.1, 0.1)
+	
+	local castbarborder_tex = cb:CreateTexture(nil, "BORDER")
+	castbarborder_tex:SetPoint("TOPLEFT", cbicon, "TOPLEFT", -noscalemult*2, noscalemult*2)
+	castbarborder_tex:SetPoint("BOTTOMRIGHT", cbicon, "BOTTOMRIGHT", noscalemult*2, -noscalemult*2)
+	castbarborder_tex:SetTexture(0.6, 0.6, 0.6)	
+	
+	--Create Health Backdrop Frame
+	local castbarbackdrop2_tex = cb:CreateTexture(nil, "ARTWORK")
+	castbarbackdrop2_tex:SetPoint("TOPLEFT", cbicon, "TOPLEFT", -noscalemult, noscalemult)
+	castbarbackdrop2_tex:SetPoint("BOTTOMRIGHT", cbicon, "BOTTOMRIGHT", noscalemult, -noscalemult)
+	castbarbackdrop2_tex:SetTexture(0.1, 0.1, 0.1)
+	
+	--Create Cast Time Text
+	cb.time = cb:CreateFontString(nil, "ARTWORK")
+	cb.time:SetPoint("RIGHT", cb, "LEFT", -1, 0)
+	cb.time:SetFont(FONT, FONTSIZE, FONTFLAG)
+	cb.time:SetTextColor(1, 1, 1)
+	cb.time:SetShadowOffset(TukuiDB.mult, -TukuiDB.mult)
+
+	--Create Cast Name Text
+	cb.name = cb:CreateFontString(nil, "ARTWORK")
+	cb.name:SetPoint("TOP", cb, "BOTTOM", 0, -3)
+	cb.name:SetFont(FONT, FONTSIZE, FONTFLAG)
+	cb.name:SetTextColor(1, 1, 1)
+	cb.name:SetShadowOffset(TukuiDB.mult, -TukuiDB.mult)
+	
+	cb.icon = cbicon
+	cb.shield = cbshield
+	cb:HookScript('OnShow', UpdateCastbar)
+	cb:HookScript('OnSizeChanged', OnSizeChanged)
+	cb:HookScript('OnValueChanged', OnValueChanged)	
+	cb:SetStatusBarTexture(TEXTURE)
+	frame.cb = cb
+
+	--Create Name Text
+	local name = hp:CreateFontString(nil, 'OVERLAY')
+	name:SetPoint('BOTTOMLEFT', hp, 'TOPLEFT', -10, 3)
+	name:SetPoint('BOTTOMRIGHT', hp, 'TOPRIGHT', 10, 3)
+	name:SetFont(FONT, FONTSIZE, FONTFLAG)
+	name:SetShadowOffset(TukuiDB.mult, -TukuiDB.mult)
+	frame.oldname = oldname
+	frame.name = name
+	
+	--Create level Text
+	
+	--Reposition and Resize RaidIcon
+	raidicon:ClearAllPoints()
+	raidicon:SetPoint("BOTTOM", hp, "TOP", 0, 16)
+	raidicon:SetSize(iconSize*1.4, iconSize*1.4)
+	raidicon:SetTexture(TukuiCF["media"].raidicons)	
+	frame.raidicon = raidicon
+	
+	--Create Class Icon
+	local cIconTex = hp:CreateTexture(nil, "OVERLAY")
+	cIconTex:SetPoint("BOTTOM", hp, "TOP", 0, 16)
+	cIconTex:SetTexture("Interface\\WorldStateFrame\\Icons-Classes")
+	cIconTex:SetSize(iconSize, iconSize)
+	frame.class = cIconTex
+	
+	--Hide Old Stuff
+	QueueObject(frame, oldlevel)
+	QueueObject(frame, oldoverlay)
+	QueueObject(frame, threat)
+	QueueObject(frame, hpborder)
+	QueueObject(frame, cbshield)
+	QueueObject(frame, cbborder)
+	QueueObject(frame, oldname)
+	QueueObject(frame, bossicon)
+	QueueObject(frame, elite)
+	
+	UpdateObjects(hp)
+	UpdateCastbar(cb)
+	
+	frames[frame] = true
+end
+
+local select = select
+local function HookFrames(...)
+	for index = 1, select('#', ...) do
+		local frame = select(index, ...)
+		local region = frame:GetRegions()
+
+		if(not frames[frame] and not frame:GetName() and region and region:GetObjectType() == 'Texture' and region:GetTexture() == OVERLAY) then
+			SkinObjects(frame)
+			frame.region = region
+		end
+	end
+end
+
+
+CreateFrame('Frame'):SetScript('OnUpdate', function(self, elapsed)
+	if(WorldFrame:GetNumChildren() ~= numChildren) then
+		numChildren = WorldFrame:GetNumChildren()
+		HookFrames(WorldFrame:GetChildren())
+	end
+
+	if(self.elapsed and self.elapsed > 0.2) then
+		for frame in pairs(frames) do
+			UpdateThreat(frame, self.elapsed)
+		end
+		
+		self.elapsed = 0
+	else
+		self.elapsed = (self.elapsed or 0) + elapsed
+	end
+	
+	ForEachPlate(CheckBlacklist)
 end)
+
+if TukuiCF["nameplate"].combat == true then
+	NamePlates:RegisterEvent("PLAYER_REGEN_ENABLED")
+	NamePlates:RegisterEvent("PLAYER_REGEN_DISABLED")
+	NamePlates:RegisterEvent("PLAYER_ENTERING_WORLD")
+	function NamePlates:PLAYER_REGEN_ENABLED()
+		SetCVar("nameplateShowEnemies", 0)
+	end
+	
+	function NamePlates:PLAYER_REGEN_DISABLED()
+		SetCVar("nameplateShowEnemies", 1)
+	end
+	
+	function NamePlates:PLAYER_ENTERING_WORLD()
+		if InCombatLockdown() then
+			SetCVar("nameplateShowEnemies", 1)
+		else
+			SetCVar("nameplateShowEnemies", 0)
+		end
+	end
+end

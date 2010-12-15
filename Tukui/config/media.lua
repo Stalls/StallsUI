@@ -14,6 +14,7 @@ TukuiCF["media"] = {
 	["altbordercolor"] = { .4,.4,.4, 1 }, -- alternative border color, mainly for unitframes text panels.
 	["backdropcolor"] = { .08,.08,.08, 1 }, -- background color of tukui panels
 	["buttonhover"] = [[Interface\AddOns\Tukui\media\textures\button_hover]],
+	["raidicons"] = [[Interface\AddOns\Tukui\media\textures\raidicons.blp]], -- new raid icon textures by hankthetank
 	["glossTex"] = [[Interface\AddOns\Tukui\media\textures\gloss]],
 	["empath1"] = [[Interface\AddOns\Tukui\media\textures\empath1]],
 	["empath2"] = [[Interface\AddOns\Tukui\media\textures\empath2]],

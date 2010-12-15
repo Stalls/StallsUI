@@ -394,6 +394,16 @@ do
 			return value
 		end
 	end
+	
+	TukuiDB.ShortValue = function(value)
+		if value >= 1e6 then
+			return ("%.1fm"):format(value / 1e6):gsub("%.?0+([km])$", "%1")
+		elseif value >= 1e3 or value <= -1e3 then
+			return ("%.1fk"):format(value / 1e3):gsub("%.?0+([km])$", "%1")
+		else
+			return value
+		end
+	end
 
 	local ShortValueNegative = function(v)
 		if v <= 999 then return v end

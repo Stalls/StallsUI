@@ -76,9 +76,13 @@ TukuiCF["actionbar"] = {
 
 TukuiCF["nameplate"] = {
 	["enable"] = true,                     -- enable nice skinned nameplates that fit into tukui
-	["showhealth"] = true,					-- show health text on nameplate
-	["enhancethreat"] = true,				-- threat features based on if your a tank or not
-	["overlap"] = false,					--allow nameplates to overlap
+		["showhealth"] = true,					-- show health text on nameplate
+		["enhancethreat"] = true,				-- threat features based on if your a tank or not
+		["overlap"] = false,				--allow nameplates to overlap
+		["combat"] = false,					--only show enemy nameplates in-combat.
+		["goodcolor"] = {0, 1, 0},			--good threat color (tank shows this with threat, everyone else without)
+		["badcolor"] = {1, 0, 0},			--bad threat color (opposite of above)
+		["transitioncolor"] = {242/255, 161/255, 10/255},	--threat color when gaining threat
 }
 
 TukuiCF["bags"] = {
@@ -185,3 +189,41 @@ if TukuiDB.myname == "Tukz" then
 	TukuiCF.others.pvpautorelease = true
 	TukuiCF.unitframes.enemyhcolor = true
 end
+
+
+
+
+
+PlateBlacklist = {
+	--Gundrak
+	["Fanged Pit Viper"] = true,
+	["Crafty Snake"] = true,
+
+	--Shaman Totems
+	["Earth Elemental Totem"] = true,
+	["Fire Elemental Totem"] = true,
+	["Fire Resistance Totem"] = true,
+	["Flametongue Totem"] = true,
+	["Frost Resistance Totem"] = true,
+	["Healing Stream Totem"] = true,
+	["Magma Totem"] = true,
+	["Mana Spring Totem"] = true,
+	["Nature Resistance Totem"] = true,
+	["Searing Totem"] = true,
+	["Stoneclaw Totem"] = true,
+	["Stoneskin Totem"] = true,
+	["Strength of Earth Totem"] = true,
+	["Windfury Totem"] = true,
+	["Totem of Wrath"] = true,
+	["Wrath of Air Totem"] = true,
+
+	--Army of the Dead
+	["Army of the Dead Ghoul"] = true,
+
+	--Hunter Trap
+	["Venomous Snake"] = true,
+	["Viper"] = true,
+
+	--Test
+	--["Unbound Seer"] = true,
+}
