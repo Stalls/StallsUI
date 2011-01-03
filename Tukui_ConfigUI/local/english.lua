@@ -112,6 +112,7 @@ TukuiL.option_tooltip_cursor = "Enable cursor tooltip"
 -- others
 TukuiL.option_others = "Others"
 TukuiL.option_others_bg = "Enable Auto-Release in battleground"
+TukuiL.option_others_viewport = "Enable Top & Botom bar"
  
 -- reminder
 TukuiL.option_reminder = "Aura Warning"

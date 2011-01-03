@@ -132,6 +132,7 @@ local function Local(o)
 	-- others
 	if o == "TukuiConfigUIothers" then o = TukuiL.option_others end
 	if o == "TukuiConfigUIotherspvpautorelease" then o = TukuiL.option_others_bg end
+	if o == "TukuiConfigUIothersshowviewport" then o = TukuiL.option_others_viewport end
 	
 	-- reminder
 	if o == "TukuiConfigUIbuffreminder" then o = TukuiL.option_reminder end
@@ -411,8 +412,8 @@ function CreateTukuiConfigUI()
 end
 
 do
-	SLASH_CONFIG1 = '/tc'
-	SLASH_CONFIG2 = '/tukui'
+	SLASH_CONFIG1 = '/vc'
+	SLASH_CONFIG2 = '/versusui'
 	function SlashCmdList.CONFIG(msg, editbox)
 		if not TukuiConfigUI or not TukuiConfigUI:IsShown() then
 			CreateTukuiConfigUI()

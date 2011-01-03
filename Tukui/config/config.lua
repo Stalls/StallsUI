@@ -10,7 +10,7 @@ TukuiCF["unitframes"] = {
 	["enable"] = true,                     -- do i really need to explain this?
 	["enemyhcolor"] = false,               -- enemy target (players) color by hostility, very useful for healer.
 	["unitcastbar"] = true,                -- enable tukui castbar
-	["cblatency"] = false,                 -- enable castbar latency
+	["cblatency"] = true,                 -- enable castbar latency
 	["cbicons"] = true,                    -- enable icons on castbar
 	["auratimer"] = true,                  -- enable timers on buffs/debuffs
 	["auratextscale"] = 11,                -- the font size of buffs/debuffs timers on unitframes
@@ -164,6 +164,7 @@ TukuiCF["buffreminder"] = {
 
 TukuiCF["others"] = {
 	["pvpautorelease"] = true,             -- enable auto-release in bg or wintergrasp. (not working for shaman, sorry)
+	["showviewport"] = false,			   -- enable the top and bottom viewport bars
 }
 
 ----------------------------------------------------------------------------
@@ -227,3 +228,10 @@ PlateBlacklist = {
 	--Test
 	--["Unbound Seer"] = true,
 }
+
+MarkBarLocal = { }
+
+MarkBarLocal.button_Disband =    "Disband Group"
+MarkBarLocal.button_Clear =      "Clear Target"
+MarkBarLocal.button_MarkBar = "Mark Bar"
+MarkBarLocal.button_RaidUtility = "Raid Utility"

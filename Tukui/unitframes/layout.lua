@@ -494,7 +494,7 @@ local function Shared(self, unit)
 		-- cast bar for player and target
 		if (db.unitcastbar == true) then
 			-- castbar of player and target
-			local castbar = CreateFrame("StatusBar", self:GetName().."_Castbar", self)
+			local castbar = CreateFrame("StatusBar", self:GetName().."_Castbar", self)			
 			castbar:SetStatusBarTexture(normTex)
 			
 			castbar.bg = castbar:CreateTexture(nil, "BORDER")
@@ -521,10 +521,9 @@ local function Shared(self, unit)
 			
 			if db.cbicons == true then
 				castbar.button = CreateFrame("Frame", nil, castbar)
-				castbar.button:SetHeight(TukuiDB.Scale(26))
-				castbar.button:SetWidth(TukuiDB.Scale(26))
+				castbar.button:SetHeight(TukuiDB.Scale(24))
+				castbar.button:SetWidth(TukuiDB.Scale(24))
 				TukuiDB.SetTemplate(castbar.button)
-				TukuiDB.CreateShadow(castbar.button)
 
 				castbar.icon = castbar.button:CreateTexture(nil, "ARTWORK")
 				castbar.icon:SetPoint("TOPLEFT", castbar.button, TukuiDB.Scale(2), TukuiDB.Scale(-2))
@@ -1203,7 +1202,7 @@ oUF:RegisterStyle('Tukz', Shared)
 
 -- player
 local player = oUF:Spawn('player', "oUF_Tukz_player")
-player:SetPoint("BOTTOMLEFT", InvTukuiActionBarBackground, "TOPLEFT", 0,8+adjustXY)
+player:SetPoint("BOTTOMLEFT", InvTukuiActionBarBackground, "TOPLEFT", 0,28+adjustXY)
 if TukuiDB.lowversion then
 	player:SetSize(TukuiDB.Scale(186), TukuiDB.Scale(51))
 else
@@ -1217,7 +1216,7 @@ focus:SetSize(TukuiInfoRight:GetWidth() - TukuiDB.Scale(4), TukuiInfoRight:GetHe
 
 -- target
 local target = oUF:Spawn('target', "oUF_Tukz_target")
-target:SetPoint("BOTTOMRIGHT", InvTukuiActionBarBackground, "TOPRIGHT", 0,8+adjustXY)
+target:SetPoint("BOTTOMRIGHT", InvTukuiActionBarBackground, "TOPRIGHT", 0,28+adjustXY)
 if TukuiDB.lowversion then
 	target:SetSize(TukuiDB.Scale(186), TukuiDB.Scale(51))
 else
@@ -1227,17 +1226,17 @@ end
 -- tot
 local tot = oUF:Spawn('targettarget', "oUF_Tukz_targettarget")
 if TukuiDB.lowversion then
-	tot:SetPoint("BOTTOMRIGHT", InvTukuiActionBarBackground, "TOPRIGHT", 0,8)
+	tot:SetPoint("BOTTOMRIGHT", InvTukuiActionBarBackground, "TOPRIGHT", 0,28)
 	tot:SetSize(TukuiDB.Scale(186), TukuiDB.Scale(18))
 else
-	tot:SetPoint("BOTTOM", InvTukuiActionBarBackground, "TOP", 0,8)
+	tot:SetPoint("BOTTOM", InvTukuiActionBarBackground, "TOP", 0,28)
 	tot:SetSize(TukuiDB.Scale(129), TukuiDB.Scale(36))
 end
 
 -- pet
 local pet = oUF:Spawn('pet', "oUF_Tukz_pet")
 if TukuiDB.lowversion then
-	pet:SetPoint("BOTTOMLEFT", InvTukuiActionBarBackground, "TOPLEFT", 0,8)
+	pet:SetPoint("BOTTOMLEFT", InvTukuiActionBarBackground, "TOPLEFT", 0,28)
 	pet:SetSize(TukuiDB.Scale(186), TukuiDB.Scale(18))
 else
 	pet:SetPoint("BOTTOM", InvTukuiActionBarBackground, "TOP", 0,49+totdebuffs)
@@ -1367,4 +1366,183 @@ do
 	UnitPopupMenus["BOSS"] = { "RAID_TARGET_ICON", "CANCEL" }
 end
 
+----------------------------------------------------------------------------------------
+-- Reposition castbars, coz Catguy's an ass
+----------------------------------------------------------------------------------------
 
+local function placeCastbar(unit)
+    local font1 = TukuiCF["media"].uffont
+    local castbar = nil
+    local castbarpanel = nil
+    
+    if (unit == "player") then
+        castbar = oUF_Tukz_player_Castbar
+    else
+        castbar = oUF_Tukz_target_Castbar
+     end
+
+    local castbarpanel = CreateFrame("Frame", castbar:GetName().."_Panel", castbar)
+    if unit == "player" then
+        TukuiDB.CreatePanel(castbarpanel, TukuiActionBarBackground:GetWidth()-8, 28, "TOP", TukuiActionBarBackground, 0, 30)
+    else
+        TukuiDB.CreatePanel(castbarpanel, TukuiActionBarBackground:GetWidth()-8, 28, "TOP", TukuiActionBarBackground, 0, 30)
+    end
+    TukuiDB.CreateShadow(castbarpanel)
+	TukuiDB.CreateGloss(castbarpanel)
+    
+    castbar:SetPoint("TOPLEFT", castbarpanel, TukuiDB.Scale(2), TukuiDB.Scale(-2))
+    castbar:SetPoint("BOTTOMRIGHT", castbarpanel, TukuiDB.Scale(-2), TukuiDB.Scale(2))
+	TukuiDB.CreateGloss(castbar)
+		
+    castbar.time = TukuiDB.SetFontString(castbar, font1, 12)
+    castbar.time:SetPoint("RIGHT", castbarpanel, "RIGHT", TukuiDB.Scale(-4), 0)
+    castbar.time:SetTextColor(0.84, 0.75, 0.65)
+    castbar.time:SetJustifyH("RIGHT")
+
+    castbar.Text = TukuiDB.SetFontString(castbar, font1, 12)
+    castbar.Text:SetPoint("LEFT", castbarpanel, "LEFT", TukuiDB.Scale(30), 0)
+    castbar.Text:SetTextColor(0.84, 0.75, 0.65)
+
+    if db.cbicons == true then
+        if unit == "player" then
+            castbar.button:SetPoint("LEFT", 0, 0)
+        elseif unit == "target" then
+            castbar.button:SetPoint("RIGHT", TukuiDB.Scale(40), 0)
+        end
+    end
+    
+    -- cast bar latency
+    local normTex = TukuiCF["media"].normTex;
+    if db.cblatency == true then
+        castbar.safezone = castbar:CreateTexture(nil, "ARTWORK")
+        castbar.safezone:SetTexture(normTex)
+        castbar.safezone:SetVertexColor(0.69, 0.31, 0.31, 0.75)
+        castbar.SafeZone = castbar.safezone
+    end
+
+    if (unit == "player") then
+        oUF_Tukz_player_Castbar.Castbar = castbar
+        oUF_Tukz_player_Castbar.Castbar.Time = castbar.time
+        oUF_Tukz_player_Castbar.Castbar.Icon = castbar.icon
+    else
+        oUF_Tukz_target_Castbar.Castbar = castbar
+        oUF_Tukz_target_Castbar.Castbar.Time = castbar.time
+        oUF_Tukz_target_Castbar.Castbar.Icon = castbar.icon
+    end
+
+    castbarpanel:RegisterEvent("ADDON_LOADED")
+    castbarpanel:SetScript("OnEvent", function(self, event, addon)
+        self:UnregisterEvent("ADDON_LOADED")
+        
+        castbarpanel:SetMovable(true)
+        castbarpanel:EnableMouse(true)
+        castbarpanel:SetScript("OnMouseDown", function(self)
+            if button == "LeftButton" and not self.isMoving then
+                self:StartMoving();
+                self.isMoving = true;
+            end
+        end)
+        castbarpanel:SetScript("OnMouseUp", function(self)
+            if button == "LeftButton" and self.isMoving then
+                self:StopMovingOrSizing();
+                self.isMoving = false;
+            end
+        end)
+        castbarpanel:SetScript("OnHide", function(self)
+            if self.isMoving then
+                self:StopMovingOrSizing();
+                self.isMoving = false;
+            end
+        end)
+    end)
+end
+
+placeCastbar("player")
+
+--if (config.separatetarget) then
+--    placeCastbar("target")
+--end
+
+
+do
+    local castbarsUnlocked = false
+    
+    local function getPanelsForUnit(unit)
+        local castbarpanel, castbar = nil
+        
+        if unit == "player" then
+            castbarpanel = oUF_Tukz_player_Castbar_Panel
+            castbar = oUF_Tukz_player_Castbar.Castbar
+        elseif unit == "target" then
+            castbarpanel = oUF_Tukz_target_Castbar_Panel
+            castbar = oUF_Tukz_target_Castbar.Castbar
+        else
+            print("Cannot get panels for unit: " .. unit)
+            return;
+        end
+        
+        return castbarpanel, castbar
+    end
+    
+    local function unlockCastbarForUnit(unit)
+        local castbarpanel, castbar = getPanelsForUnit(unit)
+        
+        castbarpanel:Show()
+        castbar.Castbar.casting = true
+        castbar.Castbar.max = 1000
+        castbar.Castbar.duration = 1
+        castbar.Castbar.delay = 0
+        castbar.Castbar.Text:SetText(unit)
+        castbar.Castbar:Show()
+        
+        castbarpanel:RegisterForDrag("LeftButton");
+        castbarpanel:SetScript("OnDragStart", castbarpanel.StartMoving);
+        castbarpanel:SetScript("OnDragStop", castbarpanel.StopMovingOrSizing);
+    end
+    
+    local function lockCastbarForUnit(unit)
+        local castbarpanel, castbar = getPanelsForUnit(unit)
+        
+        castbar.Castbar.casting = false
+        castbarpanel:EnableMouse(false);
+    end
+    
+    local function resetCastbars()
+        local castbarpanel, _ = getPanelsForUnit("player")
+        castbarpanel:SetPoint("CENTER", UIParent, 0, -200)
+        castbarpanel, _ = getPanelsForUnit("target")
+        castbarpanel:SetPoint("CENTER", UIParent, 0, -150)
+        return
+    end
+    
+    local function TUKUICASTBARLOCK(param)
+        if param == "reset" then
+            resetCastbars()
+            return
+        end
+        
+        if castbarsUnlocked == false then
+            castbarsUnlocked = true
+            
+            unlockCastbarForUnit("player")
+            
+            --if config.separatetarget then
+            --    unlockCastbarForUnit("target")
+            --end
+            
+            print("Versus UI cast bar unlocked")
+        elseif castbarsUnlocked == true then
+            lockCastbarForUnit("player")
+            
+            --if config.separatetarget then
+            --    lockCastbarForUnit("target")
+            --end
+            
+            castbarsUnlocked = false
+            print("Versus UI cast bar locked")
+        end
+    end
+    
+    SLASH_TUKUICASTBAR1 = "/vcb"
+    SlashCmdList["TUKUICASTBAR"] = TUKUICASTBARLOCK
+end

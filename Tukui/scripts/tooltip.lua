@@ -38,7 +38,7 @@ hooksecurefunc("GameTooltip_SetDefaultAnchor", function(self, parent)
 				self:SetPoint("BOTTOMRIGHT", StuffingFrameBags, "TOPRIGHT", 0, TukuiDB.Scale(4))
 			else
 				self:ClearAllPoints()
-				self:SetPoint("BOTTOMRIGHT", TukuiInfoRight, "TOPRIGHT", 0, TukuiDB.Scale(5))
+				self:SetPoint("BOTTOMRIGHT", DXEPane, "TOPRIGHT", 0, TukuiDB.Scale(5))
 			end
 		end
 	end
@@ -61,7 +61,7 @@ GameTooltip:HookScript("OnUpdate",function(self, ...)
 				self:SetPoint("BOTTOMRIGHT", StuffingFrameBags, "TOPRIGHT", 0, TukuiDB.Scale(4))
 			else
 				self:ClearAllPoints()
-				self:SetPoint("BOTTOMRIGHT", TukuiInfoRight, "TOPRIGHT", 0, TukuiDB.Scale(5))
+				self:SetPoint("BOTTOMRIGHT", DXEPane, "TOPRIGHT", 0, TukuiDB.Scale(5))
 			end
 		end
 	end

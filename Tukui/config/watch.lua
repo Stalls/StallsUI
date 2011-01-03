@@ -62,6 +62,12 @@ TukuiDB.remindbuffs = {
 	WARRIOR = {
 		469, -- commanding Shout
 		6673, -- battle Shout
+		6307, -- blood pact
+	},
+	PALADIN = {
+		20217, -- Blessing of Kings
+		19740, -- Blessing of Might
+		1126, -- Mark of the Wild
 	},
 	DEATHKNIGHT = {
 		57330, -- horn of Winter

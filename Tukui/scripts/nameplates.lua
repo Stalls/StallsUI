@@ -1,7 +1,7 @@
 --Base code by Dawn (dNameplates)
 if not TukuiCF["nameplate"].enable == true then return end
 
-local TEXTURE = TukuiCF["media"].empath6
+local TEXTURE = TukuiCF["media"].empath4
 local FONT = TukuiCF["media"].font
 local FONTSIZE = 10
 local FONTFLAG = "THINOUTLINE"

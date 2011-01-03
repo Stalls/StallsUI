@@ -8,7 +8,7 @@ if not TukuiCF["actionbar"].enable == true then return end
 local TukuiShift = CreateFrame("Frame","TukuiShiftBar",UIParent)
 TukuiShift:SetPoint("TOPLEFT", 2, -2)
 TukuiShift:SetWidth(29)
-TukuiShift:SetHeight(58)
+TukuiShift:SetHeight(91)
 
 -- shapeshift command to move totem or shapeshift in-game
 local ssmover = CreateFrame("Frame", "ssmoverholder", UIParent)
