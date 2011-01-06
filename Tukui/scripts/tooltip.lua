@@ -25,6 +25,7 @@ local classification = {
 local NeedBackdropBorderRefresh = false
 
 hooksecurefunc("GameTooltip_SetDefaultAnchor", function(self, parent)
+	local dxeframe = getglobal("DXEPane")
 	if db.cursor == true then
 		self:SetOwner(parent, "ANCHOR_CURSOR")
 	else
@@ -38,13 +39,18 @@ hooksecurefunc("GameTooltip_SetDefaultAnchor", function(self, parent)
 				self:SetPoint("BOTTOMRIGHT", StuffingFrameBags, "TOPRIGHT", 0, TukuiDB.Scale(4))
 			else
 				self:ClearAllPoints()
-				self:SetPoint("BOTTOMRIGHT", DXEPane, "TOPRIGHT", 0, TukuiDB.Scale(5))
+				if dxeframe then
+					self:SetPoint("BOTTOMRIGHT", DXEPane, "TOPRIGHT", 0, TukuiDB.Scale(5))
+				else
+					self:SetPoint("BOTTOMRIGHT", TukuiInfoRight, "TOPRIGHT", 0, TukuiDB.Scale(5))
+				end
 			end
 		end
 	end
 end)
 
 GameTooltip:HookScript("OnUpdate",function(self, ...)
+	local dxeframe = getglobal("DXEPane")
 	if self:GetAnchorType() == "ANCHOR_CURSOR" and NeedBackdropBorderRefresh == true and db.cursor ~= true then
 		-- h4x for world object tooltip border showing last border color 
 		-- or showing background sometime ~blue :x
@@ -61,7 +67,11 @@ GameTooltip:HookScript("OnUpdate",function(self, ...)
 				self:SetPoint("BOTTOMRIGHT", StuffingFrameBags, "TOPRIGHT", 0, TukuiDB.Scale(4))
 			else
 				self:ClearAllPoints()
-				self:SetPoint("BOTTOMRIGHT", DXEPane, "TOPRIGHT", 0, TukuiDB.Scale(5))
+				if dxeframe then
+					self:SetPoint("BOTTOMRIGHT", DXEPane, "TOPRIGHT", 0, TukuiDB.Scale(5))
+				else
+					self:SetPoint("BOTTOMRIGHT", TukuiInfoRight, "TOPRIGHT", 0, TukuiDB.Scale(5))
+				end
 			end
 		end
 	end

@@ -164,7 +164,7 @@ TukuiCF["buffreminder"] = {
 
 TukuiCF["others"] = {
 	["pvpautorelease"] = true,             -- enable auto-release in bg or wintergrasp. (not working for shaman, sorry)
-	["showviewport"] = false,			   -- enable the top and bottom viewport bars
+	["showviewport"] = true,			   -- enable the top and bottom viewport bars
 }
 
 ----------------------------------------------------------------------------

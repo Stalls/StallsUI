@@ -1202,7 +1202,7 @@ oUF:RegisterStyle('Tukz', Shared)
 
 -- player
 local player = oUF:Spawn('player', "oUF_Tukz_player")
-player:SetPoint("BOTTOMLEFT", InvTukuiActionBarBackground, "TOPLEFT", 0,28+adjustXY)
+player:SetPoint("BOTTOMLEFT", InvTukuiActionBarBackground, "TOPLEFT", 4,28)
 if TukuiDB.lowversion then
 	player:SetSize(TukuiDB.Scale(186), TukuiDB.Scale(51))
 else
@@ -1216,7 +1216,7 @@ focus:SetSize(TukuiInfoRight:GetWidth() - TukuiDB.Scale(4), TukuiInfoRight:GetHe
 
 -- target
 local target = oUF:Spawn('target', "oUF_Tukz_target")
-target:SetPoint("BOTTOMRIGHT", InvTukuiActionBarBackground, "TOPRIGHT", 0,28+adjustXY)
+target:SetPoint("BOTTOMRIGHT", InvTukuiActionBarBackground, "TOPRIGHT", -4,28)
 if TukuiDB.lowversion then
 	target:SetSize(TukuiDB.Scale(186), TukuiDB.Scale(51))
 else
@@ -1239,7 +1239,7 @@ if TukuiDB.lowversion then
 	pet:SetPoint("BOTTOMLEFT", InvTukuiActionBarBackground, "TOPLEFT", 0,28)
 	pet:SetSize(TukuiDB.Scale(186), TukuiDB.Scale(18))
 else
-	pet:SetPoint("BOTTOM", InvTukuiActionBarBackground, "TOP", 0,49+totdebuffs)
+	pet:SetPoint("BOTTOM", InvTukuiActionBarBackground, "TOP", 0,69+totdebuffs)
 	pet:SetSize(TukuiDB.Scale(129), TukuiDB.Scale(36))
 end
 
